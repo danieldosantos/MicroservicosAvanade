@@ -1,0 +1,10 @@
+# Ignore build output
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+
+# Dotnet user settings
+*.user
+
