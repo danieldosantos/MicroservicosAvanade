@@ -26,7 +26,7 @@ graph TD
 - **AuthService**: emite tokens **JWT** via `/login`.
 - **InventoryService**: catálogo e controle de estoque, protegido por JWT.
 - **SalesService**: criação/consulta de pedidos, valida estoque e publica eventos de venda.
-- **RabbitMQ**: mensageria para notificações e integração assíncrona.
+- **RabbitMQ**: mensageria para notificações e integração assíncrona. A fila padrão utilizada pelos serviços é `sales`.
 - **Bancos Relacionais**: um por serviço (ex.: SQL Server/PostgreSQL).
 
 ## Requisitos de Ambiente

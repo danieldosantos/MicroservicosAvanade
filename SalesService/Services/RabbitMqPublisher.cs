@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using SalesService.Messages;
@@ -24,10 +25,10 @@ public class RabbitMqPublisher : IRabbitMqPublisher
     public RabbitMqPublisher(IConfiguration configuration, ILogger<RabbitMqPublisher> logger)
     {
         _logger = logger;
-        _queueName = configuration["RabbitMq:QueueName"] ?? "order-confirmed";
+        _queueName = configuration.GetValue<string>("RabbitMq:QueueName") ?? "sales";
         var factory = new ConnectionFactory
         {
-            HostName = configuration["RabbitMq:Host"] ?? "localhost",
+            HostName = configuration.GetValue<string>("RabbitMq:Host") ?? "localhost",
             AutomaticRecoveryEnabled = true
         };
 
