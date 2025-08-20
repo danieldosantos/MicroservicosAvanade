@@ -1,0 +1,8 @@
+{
+  "name": "microservicos-avanade",
+  "version": "1.0.0",
+  "description": "Microservices for Inventory and Sales with tests",
+  "scripts": {
+    "test": "node --test"
+  }
+}
