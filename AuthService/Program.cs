@@ -45,7 +45,7 @@ app.MapPost("/login", (UserLogin login) =>
 })
 .WithName("Login");
 
-app.Run("http://localhost:5003");
+app.Run("http://localhost:5004");
 
 record UserLogin(string Username);
 
