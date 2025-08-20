@@ -44,9 +44,24 @@ dotnet run --project InventoryService
 dotnet run --project SalesService
 ```
 
-Os endpoints podem ser acessados pelo API Gateway (`http://localhost:3000`).
+Os endpoints podem ser acessados pelo API Gateway (`http://localhost:8000`).
 
 ## Autenticação
+
+Antes de executar os comandos abaixo, inicie os serviços:
+
+```bash
+# Serviços .NET
+dotnet run --project AuthService      # porta 5004
+dotnet run --project InventoryService # porta 5001
+dotnet run --project SalesService     # porta 5002
+dotnet run --project ApiGateway       # porta 8000
+
+# (Opcional) Serviços Node
+cd inventory-service && npm start     # porta 3002
+cd sales-service && npm start         # porta 3003
+cd ApiGateway && npm start            # porta 3000
+```
 
 1. Obtenha um token:
 
@@ -59,8 +74,11 @@ curl -X POST http://localhost:5004/login \
 2. Utilize o token:
 
 ```bash
-curl http://localhost:3002/items -H "Authorization: Bearer <jwt>"
-curl http://localhost:3003/sales -H "Authorization: Bearer <jwt>"
+curl http://localhost:5001/products -H "Authorization: Bearer <jwt>"
+curl http://localhost:5002/api/orders -H "Authorization: Bearer <jwt>"
+# ou, se estiver usando as versões Node:
+# curl http://localhost:3002/items -H "Authorization: Bearer <jwt>"
+# curl http://localhost:3003/sales -H "Authorization: Bearer <jwt>"
 ```
 
 ## Desenvolvimento
