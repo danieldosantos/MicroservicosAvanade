@@ -24,6 +24,8 @@ builder.Services.AddHttpClient<IInventoryServiceClient, InventoryServiceClient>(
     client.BaseAddress = new Uri(baseUrl);
 });
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
 builder.Services.AddControllers();
 
