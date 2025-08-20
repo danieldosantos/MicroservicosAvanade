@@ -32,13 +32,25 @@ namespace InventoryService.Controllers
             return await _context.Products.ToListAsync();
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<object>> GetById(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound(new { message = "Product not found" });
+            }
+
+            return Ok(new { quantity = product.Quantity });
+        }
+
         [HttpPut("{id}/stock")]
         public async Task<IActionResult> UpdateStock(int id, StockUpdateDto update)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Product not found" });
             }
             product.Quantity = update.Quantity;
             await _context.SaveChangesAsync();

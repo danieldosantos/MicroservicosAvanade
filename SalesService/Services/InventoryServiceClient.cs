@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,18 +21,26 @@ public class InventoryServiceClient : IInventoryServiceClient
 
     public async Task<bool> ValidateStockAsync(int productId, int quantity, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetAsync($"/api/inventory/{productId}", cancellationToken);
+        var response = await _httpClient.GetAsync($"/products/{productId}", cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
             return false;
         }
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        if (int.TryParse(content, out var available))
+        try
         {
-            return available >= quantity;
+            var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            var product = await JsonSerializer.DeserializeAsync<ProductDto>(stream, cancellationToken: cancellationToken);
+            return product?.Quantity >= quantity;
         }
+        catch
+        {
+            return false;
+        }
+    }
 
-        return false;
+    private sealed class ProductDto
+    {
+        public int Quantity { get; set; }
     }
 }
