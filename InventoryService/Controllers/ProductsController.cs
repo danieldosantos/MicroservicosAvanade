@@ -1,5 +1,6 @@
 using InventoryService.Data;
 using InventoryService.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace InventoryService.Controllers
 {
     [ApiController]
     [Route("products")]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly InventoryDbContext _context;
