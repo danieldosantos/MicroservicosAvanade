@@ -4,9 +4,14 @@ using SalesService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? throw new InvalidOperationException("DATABASE_URL is not set.");
+
 // Add services to the container.
 builder.Services.AddDbContext<SalesDbContext>(options =>
-    options.UseInMemoryDatabase("SalesDb"));
+    options.UseSqlite(connectionString));
 
 builder.Services.AddHttpClient<IInventoryServiceClient, InventoryServiceClient>(client =>
 {
