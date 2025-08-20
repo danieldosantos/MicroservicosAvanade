@@ -25,6 +25,10 @@ namespace SalesService.Migrations
                 b.Property<DateTime>("CreatedAt")
                     .HasColumnType("datetime2");
 
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
                 b.HasKey("Id");
 
                 b.ToTable("Orders");

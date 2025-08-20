@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SalesService.Data;
 using SalesService.Models;
 using SalesService.Services;
+using System.Collections.Generic;
 
 namespace SalesService.Controllers;
 
@@ -21,6 +22,16 @@ public class OrdersController : ControllerBase
         _context = context;
         _inventoryClient = inventoryClient;
         _publisher = publisher;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Order>>> GetAll(CancellationToken cancellationToken)
+    {
+        var orders = await _context.Orders
+            .Include(o => o.Items)
+            .ToListAsync(cancellationToken);
+
+        return orders;
     }
 
     [HttpPost]
