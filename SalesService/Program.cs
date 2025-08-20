@@ -6,6 +6,7 @@ using SalesService.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5001");
 
 // Carrega variáveis de ambiente
 builder.Configuration.AddEnvironmentVariables();
