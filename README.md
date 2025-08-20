@@ -1,4 +1,3 @@
-==============================
 README.md
 ==============================
 # Microserviços – Estoque, Vendas e Autenticação (JWT)
