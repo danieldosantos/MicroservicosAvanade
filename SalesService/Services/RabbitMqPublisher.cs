@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using SalesService.Messages;
 using SalesService.Models;
 
 namespace SalesService.Services;
@@ -40,27 +41,35 @@ public class RabbitMqPublisher : IRabbitMqPublisher
 
     public void PublishOrderConfirmed(Order order)
     {
-        var message = JsonSerializer.Serialize(order);
-        var body = Encoding.UTF8.GetBytes(message);
-
-        const int maxRetries = 3;
-        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        _logger.LogInformation("Publishing stock adjustments for Order {OrderId} with {ItemCount} items", order.Id, order.Items.Count);
+        foreach (var item in order.Items)
         {
-            try
+            var message = new StockAdjustmentMessage
             {
-                _logger.LogInformation("Publishing message to {Queue} (attempt {Attempt})", _queueName, attempt);
-                _channel.BasicPublish(exchange: string.Empty, routingKey: _queueName, basicProperties: null, body: body);
-                _logger.LogInformation("Message published to {Queue}", _queueName);
-                break;
-            }
-            catch (Exception ex)
+                ProductId = item.ProductId,
+                QuantitySold = item.Quantity
+            };
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+
+            const int maxRetries = 3;
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                _logger.LogError(ex, "Failed to publish message to {Queue} on attempt {Attempt}", _queueName, attempt);
-                if (attempt == maxRetries)
+                try
                 {
-                    throw;
+                    _logger.LogInformation("Publishing stock adjustment for Product {ProductId} to {Queue} (attempt {Attempt})", item.ProductId, _queueName, attempt);
+                    _channel.BasicPublish(exchange: string.Empty, routingKey: _queueName, basicProperties: null, body: body);
+                    _logger.LogInformation("Stock adjustment for Product {ProductId} published to {Queue}", item.ProductId, _queueName);
+                    break;
                 }
-                Thread.Sleep(1000);
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to publish stock adjustment for Product {ProductId} to {Queue} on attempt {Attempt}", item.ProductId, _queueName, attempt);
+                    if (attempt == maxRetries)
+                    {
+                        throw;
+                    }
+                    Thread.Sleep(1000);
+                }
             }
         }
     }
