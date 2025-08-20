@@ -1,1 +1,17 @@
+# --- Build output (.NET)
+bin/
+obj/
+
+# --- Visual Studio
+.vs/
+
+# --- Dotnet user settings
+*.user
+
+# --- Node.js (para frontends/scripts)
 node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+.build/
