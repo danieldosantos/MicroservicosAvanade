@@ -1,5 +1,5 @@
 ==============================
-README.md (resolvido)
+README.md
 ==============================
 # Microserviços – Estoque, Vendas e Autenticação (JWT)
 
@@ -85,7 +85,7 @@ Abra issues e PRs com correções e melhorias.
 
 
 ==============================
-.gitignore (resolvido)
+.gitignore
 ==============================
 ```gitignore
 # --- Build output (.NET)
