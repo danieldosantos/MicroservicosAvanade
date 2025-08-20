@@ -31,7 +31,7 @@ public class OrdersController : ControllerBase
             var valid = await _inventoryClient.ValidateStockAsync(item.ProductId, item.Quantity, cancellationToken);
             if (!valid)
             {
-                return BadRequest($"Insufficient stock for product {item.ProductId}");
+                return BadRequest(new { message = $"Insufficient stock for product {item.ProductId}" });
             }
         }
 

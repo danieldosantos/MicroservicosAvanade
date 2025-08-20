@@ -1,12 +1,12 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/inventory/{everything}",
+      "DownstreamPathTemplate": "/products/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         { "Host": "localhost", "Port": 5001 }
       ],
-      "UpstreamPathTemplate": "/inventory/{everything}",
+      "UpstreamPathTemplate": "/products/{everything}",
       "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
