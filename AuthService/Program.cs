@@ -48,3 +48,5 @@ app.MapPost("/login", (UserLogin login) =>
 app.Run("http://localhost:5003");
 
 record UserLogin(string Username);
+
+public partial class Program { }
