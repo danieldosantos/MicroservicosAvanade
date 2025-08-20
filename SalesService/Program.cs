@@ -3,10 +3,12 @@ using SalesService.Data;
 using SalesService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SalesDbContext>(options =>
-    options.UseInMemoryDatabase("SalesDb"));
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddHttpClient<IInventoryServiceClient, InventoryServiceClient>(client =>
 {
