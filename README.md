@@ -40,6 +40,12 @@ graph TD
 
 1. Instale e suba RabbitMQ e o banco.
 2. Configure strings de conexão/variáveis de ambiente dos serviços.
+   O `SalesService` usa SQLite local por padrão (`Data Source=sales.db`). Para utilizar outro banco, defina a variável de ambiente `DATABASE_URL`.
+
+   ```bash
+   export DATABASE_URL="Server=localhost;Database=SalesDb;User Id=sa;Password=Your_password123;"
+   ```
+
 3. Compile e execute:
    ```bash
    dotnet build
