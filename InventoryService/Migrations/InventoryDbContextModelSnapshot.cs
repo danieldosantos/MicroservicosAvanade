@@ -19,20 +19,20 @@ namespace InventoryService.Migrations
             {
                 b.Property<int>("Id")
                     .ValueGeneratedOnAdd()
-                    .HasColumnType("INTEGER");
+                    .HasColumnType("int");
 
                 b.Property<string>("Description")
-                    .HasColumnType("TEXT");
+                    .HasColumnType("nvarchar(max)");
 
                 b.Property<string>("Name")
                     .IsRequired()
-                    .HasColumnType("TEXT");
+                    .HasColumnType("nvarchar(max)");
 
                 b.Property<decimal>("Price")
-                    .HasColumnType("TEXT");
+                    .HasColumnType("decimal(18,2)");
 
                 b.Property<int>("Quantity")
-                    .HasColumnType("INTEGER");
+                    .HasColumnType("int");
 
                 b.HasKey("Id");
 
