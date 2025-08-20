@@ -3,8 +3,9 @@ using System.Text.Json;
 using InventoryService.Data;
 using InventoryService.Messages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -31,10 +32,13 @@ namespace InventoryService.Services
             {
                 HostName = _configuration.GetValue<string>("RabbitMq:Host") ?? "localhost"
             };
+            _logger.LogInformation("Connecting to RabbitMQ at {Host}", factory.HostName);
             _connection = factory.CreateConnection();
+            _logger.LogInformation("RabbitMQ connection established");
             _channel = _connection.CreateModel();
             var queue = _configuration.GetValue<string>("RabbitMq:QueueName") ?? "sales";
             _channel.QueueDeclare(queue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+            _logger.LogInformation("Declared queue {QueueName}", queue);
             return base.StartAsync(cancellationToken);
         }
 
@@ -50,6 +54,7 @@ namespace InventoryService.Services
             {
                 var body = ea.Body.ToArray();
                 var messageJson = Encoding.UTF8.GetString(body);
+                _logger.LogInformation("Received message: {Message}", messageJson);
                 try
                 {
                     var message = JsonSerializer.Deserialize<StockAdjustmentMessage>(messageJson);
@@ -60,9 +65,19 @@ namespace InventoryService.Services
                         var product = await db.Products.FirstOrDefaultAsync(p => p.Id == message.ProductId);
                         if (product != null)
                         {
+                            _logger.LogInformation("Adjusting stock for Product {ProductId} by {Quantity}", message.ProductId, message.QuantitySold);
                             product.Quantity -= message.QuantitySold;
                             await db.SaveChangesAsync(stoppingToken);
+                            _logger.LogInformation("Stock adjusted for Product {ProductId}. New quantity: {Quantity}", product.Id, product.Quantity);
                         }
+                        else
+                        {
+                            _logger.LogWarning("Product {ProductId} not found while processing stock adjustment", message.ProductId);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Received invalid StockAdjustmentMessage: {Message}", messageJson);
                     }
                 }
                 catch (Exception ex)
@@ -71,6 +86,7 @@ namespace InventoryService.Services
                 }
             };
             var queue = _configuration.GetValue<string>("RabbitMq:QueueName") ?? "sales";
+            _logger.LogInformation("Starting consumer on queue {QueueName}", queue);
             _channel.BasicConsume(queue, autoAck: true, consumer: consumer);
             return Task.CompletedTask;
         }
