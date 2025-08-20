@@ -6,12 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? throw new InvalidOperationException("DATABASE_URL is not set.");
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("DATABASE_URL is not set.");
 
 builder.Services.AddDbContext<InventoryDbContext>(options =>
     options.UseSqlite(connectionString));
