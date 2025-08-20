@@ -51,7 +51,7 @@ Os endpoints podem ser acessados pelo API Gateway (`http://localhost:3000`).
 1. Obtenha um token:
 
 ```bash
-curl -X POST http://localhost:3001/login \
+curl -X POST http://localhost:5004/login \
   -H "Content-Type: application/json" \
   -d '{"username":"user","password":"pass"}'
 ```
