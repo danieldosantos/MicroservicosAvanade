@@ -39,6 +39,8 @@ builder.Services.AddDbContext<InventoryDbContext>(options =>
 
 builder.Services.AddHostedService<RabbitMqStockConsumer>();
 
+builder.WebHost.UseUrls("http://localhost:5001");
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
