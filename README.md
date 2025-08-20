@@ -1,46 +1,102 @@
-# Microserviços Avanade
+==============================
+README.md (resolvido)
+==============================
+# Microserviços – Estoque, Vendas e Autenticação (JWT)
 
-Este repositório demonstra uma arquitetura de microserviços baseada na plataforma .NET.
+Este repositório demonstra uma arquitetura de microserviços em .NET para e-commerce, com **API Gateway**, **AuthService (JWT)**, **InventoryService** e **SalesService**, usando **RabbitMQ** para comunicação assíncrona.
 
 ## Arquitetura
 
-A solução é composta por múltiplos serviços independentes que se comunicam por mensageria.
-O diagrama a seguir apresenta uma visão simplificada da arquitetura proposta:
-
 ```mermaid
 graph TD
-    API[API Gateway] --> S1[Serviço A]
-    API --> S2[Serviço B]
-    S1 --> MQ((RabbitMQ))
-    S2 --> MQ
-    S1 --> DB1[(Banco A)]
-    S2 --> DB2[(Banco B)]
+    C[Cliente] --> API[API Gateway]
+
+    API --> AUTH[AuthService]
+    API --> INV[InventoryService]
+    API --> SAL[SalesService]
+
+    INV --> MQ((RabbitMQ))
+    SAL --> MQ
+
+    INV --> DB1[(DB Estoque)]
+    SAL --> DB2[(DB Vendas)]
 ```
+
+- **API Gateway**: ponto único de entrada e roteamento.
+- **AuthService**: emite tokens **JWT** via `/login`.
+- **InventoryService**: catálogo e controle de estoque, protegido por JWT.
+- **SalesService**: criação/consulta de pedidos, valida estoque e publica eventos de venda.
+- **RabbitMQ**: mensageria para notificações e integração assíncrona.
+- **Bancos Relacionais**: um por serviço (ex.: SQL Server/PostgreSQL).
 
 ## Requisitos de Ambiente
 
-- [RabbitMQ](https://www.rabbitmq.com/download.html)
-- Banco de dados relacional (ex.: SQL Server, PostgreSQL)
 - [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download)
-- Docker (opcional para execução local de dependências)
+- Banco relacional (SQL Server ou PostgreSQL)
+- [RabbitMQ](https://www.rabbitmq.com/download.html)
+- Docker (opcional para subir dependências localmente)
 
 ## Execução
 
-1. Instale os requisitos acima.
-2. Configure RabbitMQ e o banco de dados conforme necessário.
-3. Compile e execute os serviços:
+1. Instale e suba RabbitMQ e o banco.
+2. Configure strings de conexão/variáveis de ambiente dos serviços.
+3. Compile e execute:
    ```bash
    dotnet build
-   dotnet run --project ServicoA
-   dotnet run --project ServicoB
+   dotnet run --project ApiGateway
+   dotnet run --project AuthService
+   dotnet run --project InventoryService
+   dotnet run --project SalesService
    ```
-4. Utilize o API Gateway para acessar os endpoints expostos.
+4. Acesse os endpoints via **API Gateway**.
+
+## Autenticação (JWT)
+
+1. Obtenha um token:
+   ```bash
+   curl -X POST http://localhost:3001/login      -H "Content-Type: application/json"      -d '{"username":"user","password":"pass"}'
+   ```
+   Resposta:
+   ```json
+   { "token": "<jwt>" }
+   ```
+2. Use o token nos serviços protegidos:
+   ```bash
+   curl http://localhost:3002/items -H "Authorization: Bearer <jwt>"
+   curl http://localhost:3003/sales -H "Authorization: Bearer <jwt>"
+   curl http://localhost:3000/status -H "Authorization: Bearer <jwt>"  # via Gateway
+   ```
 
 ## Desenvolvimento
 
-- Use `dotnet restore` para restaurar pacotes.
-- Crie novos serviços dentro de pastas separadas.
+- `dotnet restore` para restaurar pacotes.
+- Cada serviço em pasta própria; siga princípios REST, validações e tratamento de erros.
+- Eventos de venda disparam atualização de estoque via RabbitMQ.
 
 ## Contribuição
 
-Sinta-se à vontade para abrir issues e pull requests com melhorias.
+Abra issues e PRs com correções e melhorias.
+
+
+==============================
+.gitignore (resolvido)
+==============================
+```gitignore
+# --- Build output (.NET)
+bin/
+obj/
+
+# --- Visual Studio
+.vs/
+
+# --- Dotnet user settings
+*.user
+
+# --- Node.js (para frontends/scripts)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+.build/
+```
