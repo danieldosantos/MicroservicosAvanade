@@ -25,6 +25,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddOcelot();
 
+builder.WebHost.UseUrls("http://localhost:8000");
+
 var app = builder.Build();
 
 app.UseAuthentication();
